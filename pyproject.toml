@@ -1,0 +1,9 @@
+[project]
+name = "feng497-acil"
+version = "0.1.0"
+description = "Hastane acil servisi yeşil alanı için kuyruk tabanlı bekleme süresi tahmin sistemi (FENG 497)"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
