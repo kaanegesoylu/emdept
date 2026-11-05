@@ -103,4 +103,4 @@ Panelde **Canlı durum → ESP32 (seri port)**, portu seçip **Bağlan**. Zaman 
 | Bora Azad Günay | Mekatronik Müh. | MATLAB doğrulaması: `matlab/` |
 | Murat Çamlıca | Mekatronik Müh. | ESP32: `firmware/`, `acil/live.py` |
 
-Görev eşlemesi öneridir; danışman toplantısında netleştirin.
+
