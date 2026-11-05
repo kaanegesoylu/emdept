@@ -134,3 +134,61 @@ def test_live_events():
     assert st.apply("start", t)
     assert not st.apply("start", t)  # tek hekim meşgul
     assert st.expected_wait_min(5) == pytest.approx(24.0)
+
+
+# --- hasta ekranı tahmini ---
+def test_predict_live_queue_ahead():
+    from datetime import datetime
+    from acil.predict import predict_live
+    st = LiveState(doctors=2)
+    t = datetime(2026, 1, 5, 18, 0)
+    for _ in range(5):
+        st.apply("arrival", t)
+    st.apply("start", t); st.apply("start", t)          # 2 hekim meşgul, 3 bekliyor
+    p = predict_live(st, mu=5)
+    # önünde 3 kişi + kendisi → 4 bitiş, hız 2·5 = 10/saat → ortalama 24 dk
+    assert p.method == "live" and p.waiting == 3 and p.low < 24 < p.high
+    assert p.mid == pytest.approx(stats_median_gamma(4, 10 / 60), rel=1e-6)
+
+
+def stats_median_gamma(k, rate):
+    from scipy import stats
+    return stats.gamma.ppf(0.5, k, scale=1 / rate)
+
+
+def test_predict_live_free_doctor_is_zero():
+    from acil.predict import predict_live
+    p = predict_live(LiveState(doctors=2), mu=5)
+    assert p.high == 0 and p.range_text() == "5 dk’dan az"
+
+
+def test_predict_history_uses_same_weekday_and_hour():
+    from acil.predict import predict_history
+    df = generate(GeneratorParams(days=56, seed=9), DEFAULT_STAFFING)
+    when = pd.Timestamp("2026-03-02 19:30")             # pazartesi akşam
+    p = predict_history(df, when, DEFAULT_STAFFING, mu=5)
+    assert p.method == "history_observed" and "pazartesi" in p.basis and p.n >= 30
+    night = predict_history(df, pd.Timestamp("2026-03-03 04:30"), DEFAULT_STAFFING, mu=5)
+    assert night.mid < p.mid
+
+
+def test_predict_history_falls_back_to_model_without_start_times():
+    from acil.predict import predict_history
+    df = generate(GeneratorParams(days=28, seed=4), DEFAULT_STAFFING).assign(start=pd.NaT)
+    staff = [2] * 8 + [3] * 16
+    p = predict_history(df, pd.Timestamp("2026-02-02 19:00"), staff, mu=5)
+    assert p.method == "history_model" and p.high > p.low >= 0
+    q = predict_history(df, pd.Timestamp("2026-02-02 19:00"), DEFAULT_STAFFING, mu=5)
+    assert q.method == "unavailable" and q.range_text() == "—"  # 2 hekimle kapasite aşılıyor
+
+
+def test_database_source_reads_new_rows_only():
+    import sqlite3
+    from acil.live import DatabaseSource
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE yesil_alan_olaylar (id INTEGER, event TEXT, ts TEXT)")
+    conn.executemany("INSERT INTO yesil_alan_olaylar VALUES (?,?,?)",
+                     [(1, "arrival", "2026-01-05T18:00:00"), (2, "arrival", "2026-01-05T18:01:00"), (3, "start", "2026-01-05T18:02:00")])
+    st, src = LiveState(doctors=1), DatabaseSource(conn)
+    assert src.drain(st) == 3 and len(st.waiting) == 1 and st.in_service == 1
+    assert src.drain(st) == 0

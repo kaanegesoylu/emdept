@@ -17,7 +17,7 @@ BUTTONS = [("arrival", "Hasta geldi", ":material/person_add:"), ("start", "Muaye
            ("doctor_off", "Hekim çıkışı", ":material/logout:")]
 
 
-def _state() -> LiveState:
+def ensure_state() -> LiveState:
     ss = st.session_state
     if "live" not in ss:
         h = datetime.now().hour
@@ -30,11 +30,32 @@ def _state() -> LiveState:
     return ss.live
 
 
+def start_simulation(lam_h: list[float], mu: float) -> None:
+    ss = st.session_state
+    ensure_state()
+    ss.live_mode = "Simülasyon"
+    ss.live_sim = Simulator(lam_h, mu, ss.staffing)
+    ss.live_running = True
+
+
+def advance(live: LiveState, seconds_real: float = 1.0) -> None:
+    """Canlı kaynağı ilerletir: simülasyonda hız × gerçek süre, ESP32'de kuyruktaki olayları işler."""
+    ss = st.session_state
+    if not ss.live_running:
+        return
+    if ss.live_mode == "Simülasyon" and ss.live_sim:
+        ss.live_sim.advance(live, ss.live_speed * seconds_real)
+    elif ss.live_serial:
+        ss.live_serial.drain(live)
+        live.now = datetime.now()
+        live._trim()
+
+
 def render() -> None:
     ss = st.session_state
     st.title("Canlı durum")
     st.caption("Yeşil alandaki butonlardan gelen olaylarla anlık kuyruk. ESP32 bağlı değilken simülasyon çalışır.")
-    live = _state()
+    live = ensure_state()
     a, _ = current()
     lam_h = a.hourly["lam"].tolist() if a else [4.0] * 24
     mu = a.mu if a else 5.0
@@ -76,12 +97,7 @@ def render() -> None:
 
     @st.fragment(run_every=1 if ss.live_running else None)
     def board() -> None:
-        if ss.live_running:
-            if ss.live_mode == "Simülasyon" and ss.live_sim:
-                ss.live_sim.advance(live, ss.live_speed)
-            elif ss.live_serial:
-                ss.live_serial.drain(live)
-                live.now = datetime.now(); live._trim()
+        advance(live)
         h = live.now.hour
         m = st.columns(4)
         m[0].metric("Bekleyen", len(live.waiting),

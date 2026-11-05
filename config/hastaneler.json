@@ -1,0 +1,14 @@
+{
+  "_not": "Karşılaştırma demosu için KURGUSAL hastaneler. Konumlar örnek amaçlıdır, gerçek bir hastaneyi temsil etmez. 'ana': true olan, projenin hastanesidir; data/gercek/ içinde veri varsa onun verisi kullanılır.",
+  "demo_konum": {"ad": "İzmir Ekonomi Üniversitesi kampüsü (demo)", "lat": 38.3884, "lon": 27.0437},
+  "hastaneler": [
+    {"id": "A", "ad": "Örnek Hastane A", "ana": true, "kurgusal": true, "lat": 38.3952, "lon": 27.0601,
+     "gunluk": 110, "profil": "aksam", "cizelge": [1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], "muayene_dk": 12, "tohum": 497},
+    {"id": "B", "ad": "Örnek Hastane B", "kurgusal": true, "lat": 38.4189, "lon": 27.1287,
+     "gunluk": 170, "profil": "aksam", "cizelge": [2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3], "muayene_dk": 13, "tohum": 11},
+    {"id": "C", "ad": "Örnek Hastane C", "kurgusal": true, "lat": 38.4602, "lon": 27.1105,
+     "gunluk": 70, "profil": "gunduz", "cizelge": [1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1], "muayene_dk": 11, "tohum": 23},
+    {"id": "D", "ad": "Örnek Hastane D", "kurgusal": true, "lat": 39.1181, "lon": 27.1794,
+     "gunluk": 60, "profil": "aksam", "cizelge": [1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], "muayene_dk": 12, "tohum": 37}
+  ]
+}

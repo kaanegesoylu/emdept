@@ -15,9 +15,9 @@ Acil servis yeşil alanında saatlik hasta gelişlerini ölçer, M/M/c (Erlang C
    source .venv/bin/activate
    pip install -r requirements.txt
    ```
-4. Sağ üstteki çalıştırma listesinden **Panel (Streamlit)** seçip ▶ ile başlatın. Tarayıcıda `http://localhost:8501` açılır.
-   Terminalden: `streamlit run app.py`
-5. Testler: **Testler (pytest)** yapılandırması ya da `pytest`.
+4. Sağ üstteki çalıştırma listesinden **Paneli Başlat** seçip ▶ ile başlatın (IDE'de Python SDK ayarı gerekmez; `.venv` içindeki Streamlit'i çalıştırır). Tarayıcıda `http://localhost:8501` açılır.
+   Terminalden: `./baslat.sh` (gerekirse `.venv`'i kendisi kurar) ya da `streamlit run app.py`.
+5. Testler: **Testleri Çalıştır** yapılandırması ya da `pytest`.
 
 ## Panel
 
@@ -29,6 +29,15 @@ Acil servis yeşil alanında saatlik hasta gelişlerini ölçer, M/M/c (Erlang C
 | Canlı durum | ESP32 butonlarından (seri port) ya da simülasyondan anlık kuyruk |
 | Yöntem | Formüller, varsayımlar, kaynaklar |
 
+## Hasta uygulaması (mobil)
+
+Hasta tarafı ayrı bir Expo (React Native) uygulamasıdır: `mobil/`. Ekranlar: Şimdi (canlı tahmin), Karşılaştır (konum + yol + varıştaki bekleme), Ne zaman (geçmişe dayalı), Bildirim, Hastane.
+
+1. **API Başlat** (sağ üstteki listeden) — tahminleri uygulamaya sunar: `http://<bilgisayar>:8000/docs`
+2. **Mobil Uygulama** — Expo sunucusunu açar; telefonda **Expo Go** ile QR kodu okutun (aynı Wi-Fi).
+
+Canlı tahmin hastane veritabanına (HBYS) anlık erişim varsayımıyla simülasyondan gelir; geçmişe dayalı tahmin yalnızca geçmiş kayıtları kullanır. Karşılaştırma demosundaki hastaneler kurgusaldır (`config/hastaneler.json`). Ayrıntılar: `mobil/README.md`.
+
 ## Klasör yapısı
 
 ```
@@ -39,7 +48,13 @@ acil/                   Hesaplama çekirdeği (arayüzden bağımsız)
   synthetic.py          Sentetik veri üreteci
   data_io.py            CSV/Excel okuma, sütun tahmini, tarih ayrıştırma, veri kontrolü
   analysis.py           Yoğunluk analizi, dağılım testleri, saatlik karar
-  live.py               Canlı durum, ESP32 mesajları, seri port okuyucu
+  live.py               Canlı durum, ESP32 mesajları, seri port ve HBYS (veritabanı) okuyucu
+  predict.py            Hastaya gösterilen tahmin: canlı ve geçmişe dayalı
+  forecast.py           Varış anındaki bekleme (yol süresi boyunca ileri simülasyon)
+  routing.py            Yol süresi ve hastane öneri kuralı
+api.py                  Hasta uygulaması için tahmin API'si (FastAPI)
+config/                 Hastane bilgisi ve karşılaştırma demosu hastaneleri
+mobil/                  Hasta uygulaması (Expo / React Native)
 views/                  Streamlit sayfaları
 tests/                  pytest testleri
 data/                   Örnek veri; hastane dosyaları data/gercek/ (depoya girmez)

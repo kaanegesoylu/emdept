@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Yeşil Alan",
+    "slug": "yesil-alan",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "tr.edu.ieu.feng497.yesilalan",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Yol süresini hesaplamak için konumunuz kullanılır. Konumunuz telefondan çıkmaz."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0e6a55",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "tr.edu.ieu.feng497.yesilalan"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Yol süresini hesaplamak için konumunuz kullanılır. Konumunuz telefondan çıkmaz."
+        }
+      ]
+    ]
+  }
+}

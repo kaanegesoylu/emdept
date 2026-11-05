@@ -197,3 +197,35 @@ def list_serial_ports() -> list[str]:
         return [p.device for p in list_ports.comports()]
     except Exception:
         return []
+
+
+class DatabaseSource:
+    """Hastane veritabanından (HBYS) olay okuyucu — gerçek erişim olduğunda simülasyonun yerine geçer.
+
+    Bugün hastane veritabanına erişim yok; panelin simülasyon modu tam olarak bu sınıfın
+    üreteceği akışı taklit eder. Erişim sağlanırsa hastane BT birimiyle anlaşılan salt okunur bir
+    görünüm (view) şu sütunları vermelidir:  id (artan), event, ts
+      event ∈ arrival | start | end | doctor_on | doctor_off
+    Kimlik, tanı veya personel bilgisi gerekmez.
+
+    conn: herhangi bir DB-API 2.0 bağlantısı (sqlite3, psycopg, pyodbc …).
+    query: parametre biçimi sürücüye göre değişir (sqlite3 için '?', psycopg için '%s').
+    """
+
+    DEFAULT_QUERY = "SELECT id, event, ts FROM yesil_alan_olaylar WHERE id > ? ORDER BY id"
+
+    def __init__(self, conn, query: str = DEFAULT_QUERY, last_id: int = 0):
+        self.conn, self.query, self.last_id = conn, query, last_id
+
+    def drain(self, st: LiveState) -> int:
+        cur = self.conn.cursor()
+        cur.execute(self.query, (self.last_id,))
+        n = 0
+        for row_id, event, ts in cur.fetchall():
+            self.last_id = max(self.last_id, int(row_id))
+            if event not in EVENTS:
+                continue
+            t = ts if isinstance(ts, datetime) else datetime.fromisoformat(str(ts))
+            st.apply(event, t, "hbys")
+            n += 1
+        return n
