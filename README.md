@@ -96,11 +96,11 @@ Panelde **Canlı durum → ESP32 (seri port)**, portu seçip **Bağlan**. Zaman 
 
 | Kişi | Bölüm | Bu depoda |
 |---|---|---|
-| Kaan Ege Soylu | Bilgisayar Müh. | Yürütücü; `acil/synthetic.py`, `acil/analysis.py` |
-| Ant Efe Kaynarcalı | Bilgisayar Müh. | Veri okuma ve Poisson kontrolü: `acil/data_io.py`, testler |
-| Ece Günal | Yazılım Müh. | Panel ve mimari: `app.py`, `views/` |
-| Kardelen Baysal | Endüstri Müh. | Hedef değerler ve literatür parametreleri; `Target` varsayılanları |
-| Bora Azad Günay | Mekatronik Müh. | MATLAB doğrulaması: `matlab/` |
-| Murat Çamlıca | Mekatronik Müh. | ESP32: `firmware/`, `acil/live.py` |
+| Kaan Ege Soylu | Bilgisayar Müh. 
+| Ant Efe Kaynarcalı | Bilgisayar Müh. 
+| Ece Günal | Yazılım Müh. 
+| Kardelen Baysal | Endüstri Müh. 
+| Bora Azad Günay | Mekatronik Müh. 
+| Murat Çamlıca | Mekatronik Müh. 
 
 
